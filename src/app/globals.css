@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+}
+
+@layer components {
+  .bg-content {
+    @apply bg-white dark:bg-zinc-900
+  }
+  .bg-content-hover {
+    @apply bg-zinc-50 dark:bg-zinc-600
+  }
+  .border-content {
+    @apply border-zinc-200 dark:border-zinc-800
+  }
+  .divide-content {
+    @apply divide-zinc-200 dark:divide-zinc-800
+  }
+  .ring-content {
+    @apply ring-zinc-200/20 dark:ring-zinc-400/20
+  }
+  .text-content {
+    @apply text-zinc-800 dark:text-zinc-100
+  }
+  .text-content-secondary {
+    @apply text-zinc-600 dark:text-zinc-300
+  }
+  .bg-neutral {
+    @apply bg-zinc-100 dark:bg-zinc-950
+  }
+  .text-neutral {
+    @apply text-zinc-800 dark:text-zinc-300
+  }
+  .border-neutral {
+    @apply border-zinc-200
+  }
+  .text-primary {
+    @apply text-indigo-600 dark:text-indigo-300
+  }
+  .border-primary {
+    @apply border-indigo-600 dark:border-indigo-500
+  }
+  .text-error {
+    @apply text-red-600 dark:text-red-400
+  }
+  .text-success {
+    @apply text-green-600 dark:text-green-400
+  }
+  .text-warning {
+    @apply text-amber-600 dark:text-amber-400
+  }
+
+  .content {
+    @apply bg-content text-content shadow-sm ring-1 ring-content sm:rounded-xl md:col-span-2
+  }
+}
