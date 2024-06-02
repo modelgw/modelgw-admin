@@ -1,28 +1,28 @@
-# Model Gateway Admin UI
+# Model Gateway Admin Console
 
-Admin UI for [Model Gateway](https://github.com/modelgw/modelgw). Uses Model Gateway Management API to manage it. Built with Next.js and Tailwind.
+Admin Console for [Model Gateway](https://github.com/modelgw/modelgw). Uses Model Gateway Management API to manage it. Built with Next.js and Tailwind.
 
-## Run via Docker
+## [Documentation ➡️ https://modelgw.com/docs](https://modelgw.com/docs)
 
-Admin UI must be running on the same network as Model Gateway to be able to connect to Model Gateway Management API.
+##  Development
+
+### Configuration
+
+Create `.env.local` or use environment variables to run in dev mode:
 
 ```sh
-docker network create modelgw
-docker run --detach --restart=always --network modelgw --name modelgw-admin \
--e GRAPHQL_URL=http://modelgw:4000/graphql \
--e NEXT_PUBLIC_GATEWAY_URL=https://gateway.modelgw.example.com \
--p 3000:3000 \
-modelgw/modelgw-admin:latest
+NEXT_PUBLIC_GATEWAY_URL=http://localhost:4001
+GRAPHQL_URL=http://localhost:4000/graphql
 ```
 
-When Admin UI starts you can open [http://localhost:3000](http://localhost:3000). To log in use credentials configured directly in Model Gateway.
+### Starting in dev mode
 
+Install dependencies and start dev mode:
 
-## Environment Variables
-
-- `GRAPHQL_URL` - URL of [Model Gateway](https://github.com/modelgw/modelgw)'s GraphQL Management API, e.g. http://modelgw:4000/graphql
-- `NEXT_PUBLIC_GATEWAY_URL` - URL of [Model Gateway](https://github.com/modelgw/modelgw)'s gateway. This is where your app will connect. Can be behind some other HTTP server or firewall, e.g. http://modelgw:4001.
-
+```sh
+npm ci
+npm run dev
+```
 
 ## Build
 

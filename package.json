@@ -1,7 +1,7 @@
 {
   "name": "modelgw-admin",
   "version": "0.1.0",
-  "description": "Model Gateway Admin UI",
+  "description": "Model Gateway Admin Console",
   "license": "MIT",
   "author": "Igor Urmincek",
   "scripts": {
