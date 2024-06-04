@@ -39,12 +39,12 @@ export default function Home() {
       title: 'Inference Endpoints',
       description: 'Manage your inference endpoints - where your models are deployed.',
     },
-    // {
-    //   href: 'https://modelgw.com/docs',
-    //   title: 'Docs',
-    //   description: 'Find in-depth information about Model Gateway features and API.',
-    //   target: '_blank',
-    // },
+    {
+      href: 'https://modelgw.com/docs',
+      title: 'Docs',
+      description: 'Find in-depth information about Model Gateway features and API.',
+      target: '_blank',
+    },
   ].filter(Boolean);
 
   return (
