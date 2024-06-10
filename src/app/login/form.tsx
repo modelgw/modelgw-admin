@@ -31,7 +31,7 @@ export default function LoginForm() {
       onError: invalidateForm(setError, ['email', 'password']),
     });
     if (response.data?.login?.token) {
-      return router.push('/');
+      window.location.href = '/';
     }
   };
   return (
