@@ -28,6 +28,19 @@ export type AddGatewayKeyPayload = {
   key?: Maybe<Scalars['String']['output']>;
 };
 
+export type AzureModelDeployment = {
+  __typename?: 'AzureModelDeployment';
+  accountEndpoint: Scalars['String']['output'];
+  accountLocation: Scalars['String']['output'];
+  accountName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  modelDeploymentModelName: Scalars['String']['output'];
+  modelDeploymentModelVersion: Scalars['String']['output'];
+  modelDeploymentName: Scalars['String']['output'];
+  resourceGroupName: Scalars['String']['output'];
+  subscriptionId: Scalars['String']['output'];
+};
+
 export type CreateGatewayInput = {
   name: Scalars['String']['input'];
 };
@@ -130,6 +143,20 @@ export type GatewayKeyEdge = {
   node?: Maybe<GatewayKey>;
 };
 
+export type ImportAzureModelDeploymentInput = {
+  inferenceEndpointName?: InputMaybe<Scalars['String']['input']>;
+  modelDeploymentId: Scalars['String']['input'];
+};
+
+export type ImportAzureModelDeploymentsInput = {
+  modelDeployments: Array<ImportAzureModelDeploymentInput>;
+};
+
+export type ImportAzureModelDeploymentsPayload = {
+  __typename?: 'ImportAzureModelDeploymentsPayload';
+  inferenceEndpoints: Array<InferenceEndpoint>;
+};
+
 export type InferenceEndpoint = Node & {
   __typename?: 'InferenceEndpoint';
   createdAt: Scalars['String']['output'];
@@ -174,6 +201,7 @@ export type Mutation = {
   addGatewayKey?: Maybe<AddGatewayKeyPayload>;
   createGateway?: Maybe<CreateGatewayPayload>;
   createInferenceEndpoint?: Maybe<CreateInferenceEndpointPayload>;
+  importAzureModelDeployments?: Maybe<ImportAzureModelDeploymentsPayload>;
   login?: Maybe<LoginPayload>;
   logout?: Maybe<Scalars['Boolean']['output']>;
   revokeGatewayKey?: Maybe<RevokeGatewayKeyPayload>;
@@ -194,6 +222,11 @@ export type MutationCreateGatewayArgs = {
 
 export type MutationCreateInferenceEndpointArgs = {
   input: CreateInferenceEndpointInput;
+};
+
+
+export type MutationImportAzureModelDeploymentsArgs = {
+  input: ImportAzureModelDeploymentsInput;
 };
 
 
@@ -230,6 +263,7 @@ export type PageInfo = {
 
 export type Query = {
   __typename?: 'Query';
+  azureModelDeployments: Array<AzureModelDeployment>;
   gateways?: Maybe<GatewayConnection>;
   inferenceEndpoints?: Maybe<InferenceEndpointConnection>;
   node?: Maybe<Node>;
@@ -385,6 +419,25 @@ export type CreateInferenceEndpointMutationVariables = Exact<{
 
 export type CreateInferenceEndpointMutation = { __typename?: 'Mutation', createInferenceEndpoint?: { __typename?: 'CreateInferenceEndpointPayload', inferenceEndpoint?: { __typename?: 'InferenceEndpoint', id: string } | null } | null };
 
+export type InferenceEndpointTable_AzureModelDeploymentsFragment = { __typename?: 'AzureModelDeployment', id: string, subscriptionId: string, resourceGroupName: string, accountName: string, accountLocation: string, accountEndpoint: string, modelDeploymentName: string, modelDeploymentModelName: string, modelDeploymentModelVersion: string };
+
+export type ImportAzureInferenceEndpointsPageQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ImportAzureInferenceEndpointsPageQuery = { __typename?: 'Query', viewer?: { __typename?: 'Viewer', id: string, email: string } | null };
+
+export type ImportAzureInferenceEndpointsListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ImportAzureInferenceEndpointsListQuery = { __typename?: 'Query', azureModelDeployments: Array<{ __typename?: 'AzureModelDeployment', id: string, subscriptionId: string, resourceGroupName: string, accountName: string, accountLocation: string, accountEndpoint: string, modelDeploymentName: string, modelDeploymentModelName: string, modelDeploymentModelVersion: string }> };
+
+export type ImportAzureModelDeploymentsMutationVariables = Exact<{
+  input: ImportAzureModelDeploymentsInput;
+}>;
+
+
+export type ImportAzureModelDeploymentsMutation = { __typename?: 'Mutation', importAzureModelDeployments?: { __typename?: 'ImportAzureModelDeploymentsPayload', inferenceEndpoints: Array<{ __typename?: 'InferenceEndpoint', id: string, name: string }> } | null };
+
 export type InferenceEndpointsPageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -487,6 +540,19 @@ export const InferenceEndpointList_InferenceEndpointsFragmentDoc = gql`
       status
     }
   }
+}
+    `;
+export const InferenceEndpointTable_AzureModelDeploymentsFragmentDoc = gql`
+    fragment InferenceEndpointTable_azureModelDeployments on AzureModelDeployment {
+  id
+  subscriptionId
+  resourceGroupName
+  accountName
+  accountLocation
+  accountEndpoint
+  modelDeploymentName
+  modelDeploymentModelName
+  modelDeploymentModelVersion
 }
     `;
 export const Layout_ViewerFragmentDoc = gql`
@@ -944,6 +1010,120 @@ export function useCreateInferenceEndpointMutation(baseOptions?: Apollo.Mutation
 export type CreateInferenceEndpointMutationHookResult = ReturnType<typeof useCreateInferenceEndpointMutation>;
 export type CreateInferenceEndpointMutationResult = Apollo.MutationResult<CreateInferenceEndpointMutation>;
 export type CreateInferenceEndpointMutationOptions = Apollo.BaseMutationOptions<CreateInferenceEndpointMutation, CreateInferenceEndpointMutationVariables>;
+export const ImportAzureInferenceEndpointsPageDocument = gql`
+    query ImportAzureInferenceEndpointsPage {
+  viewer {
+    ...Layout_viewer
+  }
+}
+    ${Layout_ViewerFragmentDoc}`;
+
+/**
+ * __useImportAzureInferenceEndpointsPageQuery__
+ *
+ * To run a query within a React component, call `useImportAzureInferenceEndpointsPageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useImportAzureInferenceEndpointsPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useImportAzureInferenceEndpointsPageQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useImportAzureInferenceEndpointsPageQuery(baseOptions?: Apollo.QueryHookOptions<ImportAzureInferenceEndpointsPageQuery, ImportAzureInferenceEndpointsPageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ImportAzureInferenceEndpointsPageQuery, ImportAzureInferenceEndpointsPageQueryVariables>(ImportAzureInferenceEndpointsPageDocument, options);
+      }
+export function useImportAzureInferenceEndpointsPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ImportAzureInferenceEndpointsPageQuery, ImportAzureInferenceEndpointsPageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ImportAzureInferenceEndpointsPageQuery, ImportAzureInferenceEndpointsPageQueryVariables>(ImportAzureInferenceEndpointsPageDocument, options);
+        }
+export function useImportAzureInferenceEndpointsPageSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ImportAzureInferenceEndpointsPageQuery, ImportAzureInferenceEndpointsPageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ImportAzureInferenceEndpointsPageQuery, ImportAzureInferenceEndpointsPageQueryVariables>(ImportAzureInferenceEndpointsPageDocument, options);
+        }
+export type ImportAzureInferenceEndpointsPageQueryHookResult = ReturnType<typeof useImportAzureInferenceEndpointsPageQuery>;
+export type ImportAzureInferenceEndpointsPageLazyQueryHookResult = ReturnType<typeof useImportAzureInferenceEndpointsPageLazyQuery>;
+export type ImportAzureInferenceEndpointsPageSuspenseQueryHookResult = ReturnType<typeof useImportAzureInferenceEndpointsPageSuspenseQuery>;
+export type ImportAzureInferenceEndpointsPageQueryResult = Apollo.QueryResult<ImportAzureInferenceEndpointsPageQuery, ImportAzureInferenceEndpointsPageQueryVariables>;
+export const ImportAzureInferenceEndpointsListDocument = gql`
+    query ImportAzureInferenceEndpointsList {
+  azureModelDeployments {
+    ...InferenceEndpointTable_azureModelDeployments
+  }
+}
+    ${InferenceEndpointTable_AzureModelDeploymentsFragmentDoc}`;
+
+/**
+ * __useImportAzureInferenceEndpointsListQuery__
+ *
+ * To run a query within a React component, call `useImportAzureInferenceEndpointsListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useImportAzureInferenceEndpointsListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useImportAzureInferenceEndpointsListQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useImportAzureInferenceEndpointsListQuery(baseOptions?: Apollo.QueryHookOptions<ImportAzureInferenceEndpointsListQuery, ImportAzureInferenceEndpointsListQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ImportAzureInferenceEndpointsListQuery, ImportAzureInferenceEndpointsListQueryVariables>(ImportAzureInferenceEndpointsListDocument, options);
+      }
+export function useImportAzureInferenceEndpointsListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ImportAzureInferenceEndpointsListQuery, ImportAzureInferenceEndpointsListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ImportAzureInferenceEndpointsListQuery, ImportAzureInferenceEndpointsListQueryVariables>(ImportAzureInferenceEndpointsListDocument, options);
+        }
+export function useImportAzureInferenceEndpointsListSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ImportAzureInferenceEndpointsListQuery, ImportAzureInferenceEndpointsListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ImportAzureInferenceEndpointsListQuery, ImportAzureInferenceEndpointsListQueryVariables>(ImportAzureInferenceEndpointsListDocument, options);
+        }
+export type ImportAzureInferenceEndpointsListQueryHookResult = ReturnType<typeof useImportAzureInferenceEndpointsListQuery>;
+export type ImportAzureInferenceEndpointsListLazyQueryHookResult = ReturnType<typeof useImportAzureInferenceEndpointsListLazyQuery>;
+export type ImportAzureInferenceEndpointsListSuspenseQueryHookResult = ReturnType<typeof useImportAzureInferenceEndpointsListSuspenseQuery>;
+export type ImportAzureInferenceEndpointsListQueryResult = Apollo.QueryResult<ImportAzureInferenceEndpointsListQuery, ImportAzureInferenceEndpointsListQueryVariables>;
+export const ImportAzureModelDeploymentsDocument = gql`
+    mutation ImportAzureModelDeployments($input: ImportAzureModelDeploymentsInput!) {
+  importAzureModelDeployments(input: $input) {
+    inferenceEndpoints {
+      id
+      name
+    }
+  }
+}
+    `;
+export type ImportAzureModelDeploymentsMutationFn = Apollo.MutationFunction<ImportAzureModelDeploymentsMutation, ImportAzureModelDeploymentsMutationVariables>;
+
+/**
+ * __useImportAzureModelDeploymentsMutation__
+ *
+ * To run a mutation, you first call `useImportAzureModelDeploymentsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useImportAzureModelDeploymentsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [importAzureModelDeploymentsMutation, { data, loading, error }] = useImportAzureModelDeploymentsMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useImportAzureModelDeploymentsMutation(baseOptions?: Apollo.MutationHookOptions<ImportAzureModelDeploymentsMutation, ImportAzureModelDeploymentsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ImportAzureModelDeploymentsMutation, ImportAzureModelDeploymentsMutationVariables>(ImportAzureModelDeploymentsDocument, options);
+      }
+export type ImportAzureModelDeploymentsMutationHookResult = ReturnType<typeof useImportAzureModelDeploymentsMutation>;
+export type ImportAzureModelDeploymentsMutationResult = Apollo.MutationResult<ImportAzureModelDeploymentsMutation>;
+export type ImportAzureModelDeploymentsMutationOptions = Apollo.BaseMutationOptions<ImportAzureModelDeploymentsMutation, ImportAzureModelDeploymentsMutationVariables>;
 export const InferenceEndpointsPageDocument = gql`
     query InferenceEndpointsPage {
   inferenceEndpoints {

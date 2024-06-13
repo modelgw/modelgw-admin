@@ -9,6 +9,7 @@ import UpdateGatewayForm from './gateways/[gatewayId]/UpdateGatewayForm';
 import UpdateGatewayKeysForm from './gateways/[gatewayId]/UpdateGatewayKeysForm';
 import InferenceEndpointForm from './inference-endpoints/InferenceEndpointForm';
 import InferenceEndpointList from './inference-endpoints/InferenceEndpointList';
+import InferenceEndpointTable from './inference-endpoints/import/InferenceEndpointTable';
 
 // import { setVerbosity } from 'ts-invariant';
 // setVerbosity('debug');
@@ -55,6 +56,7 @@ function makeClient() {
         ${UpdateGatewayKeysForm.fragments.gatewayKeys}
         ${InferenceEndpointList.fragments.inferenceEndpoints}
         ${InferenceEndpointForm.fragments.inferenceEndpoint}
+        ${InferenceEndpointTable.fragments.azureModelDeployments}
       `),
     }),
     link:
