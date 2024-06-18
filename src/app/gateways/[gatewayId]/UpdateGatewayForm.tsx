@@ -2,9 +2,10 @@
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Checkbox, CheckboxField, CheckboxGroup } from '@/components/ui/Checkbox';
-import { ErrorMessage, Field, FieldGroup, Fieldset, Label, Legend } from '@/components/ui/Fieldset';
+import { Description, ErrorMessage, Field, FieldGroup, Fieldset, Label, Legend } from '@/components/ui/Fieldset';
 import { Input } from '@/components/ui/Input';
 import { OnlineStatus } from '@/components/ui/OnlineStatus';
+import { Text } from '@/components/ui/Text';
 import { UpdateGatewayForm_GatewayFragment, UpdateGatewayForm_InferenceEndpointsFragment, UpdateGatewayInput, UpdateGatewayMutationFn } from '@/generated/graphql-client';
 import { PLATFORM_LIST } from '@/lib/const';
 import { invalidateForm } from '@/lib/form';
@@ -30,9 +31,12 @@ export default function UpdateGatewayForm({ gateway, inferenceEndpoints, onSubmi
     defaultValues: {
       gatewayId: gateway?.id,
       name: gateway?.name,
+      logTraffic: gateway?.logTraffic,
+      logPayload: gateway?.logPayload,
       inferenceEndpointIds: gateway?.inferenceEndpoints?.edges?.map(edge => edge?.node?.id) ?? [],
     },
   });
+  const logTrafficWatch = watch('logTraffic');
   const inferenceEndpointIdsWatch = watch('inferenceEndpointIds');
   useEffect(() => {
     if (inferenceEndpointIdsWatch) {
@@ -48,7 +52,12 @@ export default function UpdateGatewayForm({ gateway, inferenceEndpoints, onSubmi
   const submit: SubmitHandler<UpdateGatewayInput> = async (data) => {
     clearErrors();
     const result = await onSubmit({
-      variables: { input: data },
+      variables: {
+        input: {
+          ...data,
+          logPayload: data.logPayload && logTrafficWatch,
+        },
+      },
       onError: invalidateForm(setError, ['name', 'inferenceEndpointIds']),
     });
   };
@@ -67,6 +76,36 @@ export default function UpdateGatewayForm({ gateway, inferenceEndpoints, onSubmi
           </Field>
         </FieldGroup>
       </Fieldset>
+
+      <Fieldset>
+        <Legend>Logging</Legend>
+        <Text>How to log requests and responses in Model Gateway. Logs are written in standard output.</Text>
+        <CheckboxGroup>
+          <CheckboxField>
+            <Controller name="logTraffic" control={control} render={({ field }) => (
+              <Checkbox
+                name={field.name}
+                checked={field.value}
+                onChange={field.onChange}
+              />
+            )} />
+            <Label>Log traffic</Label>
+            <Description>Log traffic but not the payload. Keep track of requests and responses but preserve privacy by omitting the payload.</Description>
+          </CheckboxField>
+          <CheckboxField disabled={!logTrafficWatch}>
+            <Controller name="logPayload" control={control} render={({ field }) => (
+              <Checkbox
+                name={field.name}
+                checked={field.value && logTrafficWatch}
+                onChange={field.onChange}
+              />
+            )} />
+            <Label>Log payload</Label>
+            <Description>Include request and response payload in the logs. Sensitive data may appear in the log if present in the payload.</Description>
+          </CheckboxField>
+        </CheckboxGroup>
+      </Fieldset>
+
       <Fieldset>
         <Legend>Inference Enpoints</Legend>
         <Controller name="inferenceEndpointIds" control={control} render={({ field }) => (
@@ -106,6 +145,8 @@ UpdateGatewayForm.fragments = {
     fragment UpdateGatewayForm_gateway on Gateway {
       id
       name
+      logTraffic
+      logPayload
       inferenceEndpoints {
         edges {
           node {
