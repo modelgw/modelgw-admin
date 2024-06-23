@@ -76,6 +76,8 @@ export type Gateway = Node & {
   logTraffic: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   status: Scalars['String']['output'];
+  tracePayload: Scalars['Boolean']['output'];
+  traceTraffic: Scalars['Boolean']['output'];
   updatedAt: Scalars['String']['output'];
 };
 
@@ -308,6 +310,8 @@ export type UpdateGatewayInput = {
   logPayload: Scalars['Boolean']['input'];
   logTraffic: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
+  tracePayload: Scalars['Boolean']['input'];
+  traceTraffic: Scalars['Boolean']['input'];
 };
 
 export type UpdateGatewayPayload = {
@@ -340,7 +344,7 @@ export type Viewer = {
 
 export type GatewayList_GatewaysFragment = { __typename?: 'GatewayConnection', edges?: Array<{ __typename?: 'GatewayEdge', node?: { __typename?: 'Gateway', id: string, name: string, status: string } | null } | null> | null };
 
-export type UpdateGatewayForm_GatewayFragment = { __typename?: 'Gateway', id: string, name: string, logTraffic: boolean, logPayload: boolean, inferenceEndpoints?: { __typename?: 'GatewayInferenceEndpointConnection', edges?: Array<{ __typename?: 'GatewayInferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string } | null } | null> | null } | null };
+export type UpdateGatewayForm_GatewayFragment = { __typename?: 'Gateway', id: string, name: string, traceTraffic: boolean, tracePayload: boolean, logTraffic: boolean, logPayload: boolean, inferenceEndpoints?: { __typename?: 'GatewayInferenceEndpointConnection', edges?: Array<{ __typename?: 'GatewayInferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string } | null } | null> | null } | null };
 
 export type UpdateGatewayForm_InferenceEndpointsFragment = { __typename?: 'InferenceEndpointConnection', edges?: Array<{ __typename?: 'InferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string, name: string, platform: string, status: string } | null } | null> | null };
 
@@ -367,14 +371,14 @@ export type GatewayPageQueryVariables = Exact<{
 }>;
 
 
-export type GatewayPageQuery = { __typename?: 'Query', gateway?: { __typename?: 'Gateway', id: string, name: string, logTraffic: boolean, logPayload: boolean, keys?: { __typename?: 'GatewayKeyConnection', totalCount: number, edges?: Array<{ __typename?: 'GatewayKeyEdge', node?: { __typename?: 'GatewayKey', id: string, name: string, maskedKey: string, status: string } | null } | null> | null } | null, inferenceEndpoints?: { __typename?: 'GatewayInferenceEndpointConnection', edges?: Array<{ __typename?: 'GatewayInferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string } | null } | null> | null } | null } | { __typename?: 'GatewayKey' } | { __typename?: 'InferenceEndpoint' } | null, inferenceEndpoints?: { __typename?: 'InferenceEndpointConnection', edges?: Array<{ __typename?: 'InferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string, name: string, platform: string, status: string } | null } | null> | null } | null, viewer?: { __typename?: 'Viewer', id: string, email: string } | null };
+export type GatewayPageQuery = { __typename?: 'Query', gateway?: { __typename?: 'Gateway', id: string, name: string, traceTraffic: boolean, tracePayload: boolean, logTraffic: boolean, logPayload: boolean, keys?: { __typename?: 'GatewayKeyConnection', totalCount: number, edges?: Array<{ __typename?: 'GatewayKeyEdge', node?: { __typename?: 'GatewayKey', id: string, name: string, maskedKey: string, status: string } | null } | null> | null } | null, inferenceEndpoints?: { __typename?: 'GatewayInferenceEndpointConnection', edges?: Array<{ __typename?: 'GatewayInferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string } | null } | null> | null } | null } | { __typename?: 'GatewayKey' } | { __typename?: 'InferenceEndpoint' } | null, inferenceEndpoints?: { __typename?: 'InferenceEndpointConnection', edges?: Array<{ __typename?: 'InferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string, name: string, platform: string, status: string } | null } | null> | null } | null, viewer?: { __typename?: 'Viewer', id: string, email: string } | null };
 
 export type UpdateGatewayMutationVariables = Exact<{
   input: UpdateGatewayInput;
 }>;
 
 
-export type UpdateGatewayMutation = { __typename?: 'Mutation', updateGateway?: { __typename?: 'UpdateGatewayPayload', gateway?: { __typename?: 'Gateway', id: string, name: string, logTraffic: boolean, logPayload: boolean, inferenceEndpoints?: { __typename?: 'GatewayInferenceEndpointConnection', edges?: Array<{ __typename?: 'GatewayInferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string } | null } | null> | null } | null } | null } | null };
+export type UpdateGatewayMutation = { __typename?: 'Mutation', updateGateway?: { __typename?: 'UpdateGatewayPayload', gateway?: { __typename?: 'Gateway', id: string, name: string, traceTraffic: boolean, tracePayload: boolean, logTraffic: boolean, logPayload: boolean, inferenceEndpoints?: { __typename?: 'GatewayInferenceEndpointConnection', edges?: Array<{ __typename?: 'GatewayInferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string } | null } | null> | null } | null } | null } | null };
 
 export type CreateGatewayPageQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -481,6 +485,8 @@ export const UpdateGatewayForm_GatewayFragmentDoc = gql`
     fragment UpdateGatewayForm_gateway on Gateway {
   id
   name
+  traceTraffic
+  tracePayload
   logTraffic
   logPayload
   inferenceEndpoints {

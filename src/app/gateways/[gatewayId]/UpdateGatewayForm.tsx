@@ -31,11 +31,14 @@ export default function UpdateGatewayForm({ gateway, inferenceEndpoints, onSubmi
     defaultValues: {
       gatewayId: gateway?.id,
       name: gateway?.name,
+      traceTraffic: gateway?.traceTraffic,
+      tracePayload: gateway?.tracePayload,
       logTraffic: gateway?.logTraffic,
       logPayload: gateway?.logPayload,
       inferenceEndpointIds: gateway?.inferenceEndpoints?.edges?.map(edge => edge?.node?.id) ?? [],
     },
   });
+  const traceTrafficWatch = watch('traceTraffic');
   const logTrafficWatch = watch('logTraffic');
   const inferenceEndpointIdsWatch = watch('inferenceEndpointIds');
   useEffect(() => {
@@ -78,6 +81,35 @@ export default function UpdateGatewayForm({ gateway, inferenceEndpoints, onSubmi
       </Fieldset>
 
       <Fieldset>
+        <Legend>Tracing</Legend>
+        <Text>Persist requests and responses traces in Model Gateway. Traces are stored in the database.</Text>
+        <CheckboxGroup>
+          <CheckboxField>
+            <Controller name="traceTraffic" control={control} render={({ field }) => (
+              <Checkbox
+                name={field.name}
+                checked={field.value}
+                onChange={field.onChange}
+              />
+            )} />
+            <Label>Trace traffic</Label>
+            <Description>Trace traffic but not the payload. Keep track of requests and responses while preserving privacy by omitting the payload.</Description>
+          </CheckboxField>
+          <CheckboxField disabled={!traceTrafficWatch}>
+            <Controller name="tracePayload" control={control} render={({ field }) => (
+              <Checkbox
+                name={field.name}
+                checked={field.value && traceTrafficWatch}
+                onChange={field.onChange}
+              />
+            )} />
+            <Label>Trace payload</Label>
+            <Description>Include request and response payloads in traces. Sensitive data might appear in the traces if present in the payload.</Description>
+          </CheckboxField>
+        </CheckboxGroup>
+      </Fieldset>
+
+      <Fieldset>
         <Legend>Logging</Legend>
         <Text>How to log requests and responses in Model Gateway. Logs are written in standard output.</Text>
         <CheckboxGroup>
@@ -101,7 +133,7 @@ export default function UpdateGatewayForm({ gateway, inferenceEndpoints, onSubmi
               />
             )} />
             <Label>Log payload</Label>
-            <Description>Include request and response payload in the logs. Sensitive data may appear in the log if present in the payload.</Description>
+            <Description>Include request and response payloads in the logs. Sensitive data may appear in the log if present in the payload.</Description>
           </CheckboxField>
         </CheckboxGroup>
       </Fieldset>
@@ -145,6 +177,8 @@ UpdateGatewayForm.fragments = {
     fragment UpdateGatewayForm_gateway on Gateway {
       id
       name
+      traceTraffic
+      tracePayload
       logTraffic
       logPayload
       inferenceEndpoints {
