@@ -15,6 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  JSONObject: { input: any; output: any; }
 };
 
 export type AddGatewayKeyInput = {
@@ -64,6 +65,11 @@ export type CreateInferenceEndpointInput = {
 export type CreateInferenceEndpointPayload = {
   __typename?: 'CreateInferenceEndpointPayload';
   inferenceEndpoint?: Maybe<InferenceEndpoint>;
+};
+
+export type DateTimeFilter = {
+  gte?: InputMaybe<Scalars['String']['input']>;
+  lte?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Gateway = Node & {
@@ -147,6 +153,55 @@ export type GatewayKeyEdge = {
   node?: Maybe<GatewayKey>;
 };
 
+export type GatewayRequest = Node & {
+  __typename?: 'GatewayRequest';
+  body?: Maybe<Scalars['String']['output']>;
+  contentType?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  gateway: Gateway;
+  gatewayKey: GatewayKey;
+  gatewayResponse?: Maybe<GatewayResponse>;
+  id: Scalars['ID']['output'];
+  ip: Scalars['String']['output'];
+  maxTokens?: Maybe<Scalars['Int']['output']>;
+  requestId: Scalars['String']['output'];
+  seed?: Maybe<Scalars['Int']['output']>;
+  stream?: Maybe<Scalars['Boolean']['output']>;
+  temperature?: Maybe<Scalars['Float']['output']>;
+  tools?: Maybe<Scalars['Boolean']['output']>;
+  topP?: Maybe<Scalars['Float']['output']>;
+  url: Scalars['String']['output'];
+};
+
+export type GatewayRequestConnection = {
+  __typename?: 'GatewayRequestConnection';
+  edges?: Maybe<Array<Maybe<GatewayRequestEdge>>>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type GatewayRequestEdge = {
+  __typename?: 'GatewayRequestEdge';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<GatewayRequest>;
+};
+
+export type GatewayRequestFilter = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  gatewayId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type GatewayResponse = {
+  __typename?: 'GatewayResponse';
+  body?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  duration: Scalars['Float']['output'];
+  headers: Scalars['JSONObject']['output'];
+  id: Scalars['ID']['output'];
+  inferenceEndpointResponse?: Maybe<InferenceEndpointResponse>;
+  statusCode: Scalars['Int']['output'];
+};
+
 export type ImportAzureModelDeploymentInput = {
   inferenceEndpointName?: InputMaybe<Scalars['String']['input']>;
   modelDeploymentId: Scalars['String']['input'];
@@ -187,6 +242,30 @@ export type InferenceEndpointEdge = {
   __typename?: 'InferenceEndpointEdge';
   cursor: Scalars['String']['output'];
   node?: Maybe<InferenceEndpoint>;
+};
+
+export type InferenceEndpointRequest = {
+  __typename?: 'InferenceEndpointRequest';
+  body?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  inferenceEndpoint: InferenceEndpoint;
+  method: Scalars['String']['output'];
+  url: Scalars['String']['output'];
+};
+
+export type InferenceEndpointResponse = {
+  __typename?: 'InferenceEndpointResponse';
+  body?: Maybe<Scalars['String']['output']>;
+  choices?: Maybe<Scalars['Int']['output']>;
+  completionTokens?: Maybe<Scalars['Int']['output']>;
+  createdAt: Scalars['String']['output'];
+  duration: Scalars['Float']['output'];
+  headers: Scalars['JSONObject']['output'];
+  id: Scalars['ID']['output'];
+  inferenceEndpointRequest?: Maybe<InferenceEndpointRequest>;
+  promptTokens?: Maybe<Scalars['Int']['output']>;
+  statusCode: Scalars['Int']['output'];
 };
 
 export type LoginInput = {
@@ -268,10 +347,20 @@ export type PageInfo = {
 export type Query = {
   __typename?: 'Query';
   azureModelDeployments: Array<AzureModelDeployment>;
+  gatewayRequests?: Maybe<GatewayRequestConnection>;
   gateways?: Maybe<GatewayConnection>;
   inferenceEndpoints?: Maybe<InferenceEndpointConnection>;
   node?: Maybe<Node>;
   viewer?: Maybe<Viewer>;
+};
+
+
+export type QueryGatewayRequestsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<GatewayRequestFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -371,7 +460,7 @@ export type GatewayPageQueryVariables = Exact<{
 }>;
 
 
-export type GatewayPageQuery = { __typename?: 'Query', gateway?: { __typename?: 'Gateway', id: string, name: string, traceTraffic: boolean, tracePayload: boolean, logTraffic: boolean, logPayload: boolean, keys?: { __typename?: 'GatewayKeyConnection', totalCount: number, edges?: Array<{ __typename?: 'GatewayKeyEdge', node?: { __typename?: 'GatewayKey', id: string, name: string, maskedKey: string, status: string } | null } | null> | null } | null, inferenceEndpoints?: { __typename?: 'GatewayInferenceEndpointConnection', edges?: Array<{ __typename?: 'GatewayInferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string } | null } | null> | null } | null } | { __typename?: 'GatewayKey' } | { __typename?: 'InferenceEndpoint' } | null, inferenceEndpoints?: { __typename?: 'InferenceEndpointConnection', edges?: Array<{ __typename?: 'InferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string, name: string, platform: string, status: string } | null } | null> | null } | null, viewer?: { __typename?: 'Viewer', id: string, email: string } | null };
+export type GatewayPageQuery = { __typename?: 'Query', gateway?: { __typename?: 'Gateway', id: string, name: string, traceTraffic: boolean, tracePayload: boolean, logTraffic: boolean, logPayload: boolean, keys?: { __typename?: 'GatewayKeyConnection', totalCount: number, edges?: Array<{ __typename?: 'GatewayKeyEdge', node?: { __typename?: 'GatewayKey', id: string, name: string, maskedKey: string, status: string } | null } | null> | null } | null, inferenceEndpoints?: { __typename?: 'GatewayInferenceEndpointConnection', edges?: Array<{ __typename?: 'GatewayInferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string } | null } | null> | null } | null } | { __typename?: 'GatewayKey' } | { __typename?: 'GatewayRequest' } | { __typename?: 'InferenceEndpoint' } | null, inferenceEndpoints?: { __typename?: 'InferenceEndpointConnection', edges?: Array<{ __typename?: 'InferenceEndpointEdge', node?: { __typename?: 'InferenceEndpoint', id: string, name: string, platform: string, status: string } | null } | null> | null } | null, viewer?: { __typename?: 'Viewer', id: string, email: string } | null };
 
 export type UpdateGatewayMutationVariables = Exact<{
   input: UpdateGatewayInput;
@@ -406,7 +495,7 @@ export type InferenceEndpointPageQueryVariables = Exact<{
 }>;
 
 
-export type InferenceEndpointPageQuery = { __typename?: 'Query', inferenceEndpoint?: { __typename?: 'Gateway' } | { __typename?: 'GatewayKey' } | { __typename?: 'InferenceEndpoint', id: string, name: string, platform: string, region?: string | null, endpoint: string, modelName?: string | null, modelVersion?: string | null, deploymentName?: string | null } | null, viewer?: { __typename?: 'Viewer', id: string, email: string } | null };
+export type InferenceEndpointPageQuery = { __typename?: 'Query', inferenceEndpoint?: { __typename?: 'Gateway' } | { __typename?: 'GatewayKey' } | { __typename?: 'GatewayRequest' } | { __typename?: 'InferenceEndpoint', id: string, name: string, platform: string, region?: string | null, endpoint: string, modelName?: string | null, modelVersion?: string | null, deploymentName?: string | null } | null, viewer?: { __typename?: 'Viewer', id: string, email: string } | null };
 
 export type UpdateInferenceEndpointMutationVariables = Exact<{
   input: UpdateInferenceEndpointInput;
@@ -462,6 +551,26 @@ export type HomePageQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type HomePageQuery = { __typename?: 'Query', gateways?: { __typename?: 'GatewayConnection', totalCount: number } | null, inferenceEndpoints?: { __typename?: 'InferenceEndpointConnection', totalCount: number } | null, viewer?: { __typename?: 'Viewer', id: string, email: string } | null };
+
+export type GatewayRequestTable_GatewaysFragment = { __typename?: 'GatewayConnection', edges?: Array<{ __typename?: 'GatewayEdge', node?: { __typename?: 'Gateway', id: string, name: string } | null } | null> | null };
+
+export type GatewayRequestTable_GatewayRequestsFragment = { __typename?: 'GatewayRequestConnection', pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges?: Array<{ __typename?: 'GatewayRequestEdge', node?: { __typename?: 'GatewayRequest', id: string, url: string, body?: string | null, contentType?: string | null, requestId: string, tools?: boolean | null, stream?: boolean | null, temperature?: number | null, maxTokens?: number | null, createdAt: string, gateway: { __typename?: 'Gateway', id: string, name: string }, gatewayKey: { __typename?: 'GatewayKey', name: string }, gatewayResponse?: { __typename?: 'GatewayResponse', id: string, duration: number, statusCode: number, headers: any, body?: string | null, createdAt: string, inferenceEndpointResponse?: { __typename?: 'InferenceEndpointResponse', promptTokens?: number | null, completionTokens?: number | null, inferenceEndpointRequest?: { __typename?: 'InferenceEndpointRequest', id: string, inferenceEndpoint: { __typename?: 'InferenceEndpoint', id: string, name: string } } | null } | null } | null } | null } | null> | null };
+
+export type TracesPageQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TracesPageQuery = { __typename?: 'Query', viewer?: { __typename?: 'Viewer', id: string, email: string } | null, gateways?: { __typename?: 'GatewayConnection', edges?: Array<{ __typename?: 'GatewayEdge', node?: { __typename?: 'Gateway', id: string, name: string } | null } | null> | null } | null };
+
+export type TracesListQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<GatewayRequestFilter>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type TracesListQuery = { __typename?: 'Query', gatewayRequests?: { __typename?: 'GatewayRequestConnection', pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasNextPage: boolean, hasPreviousPage: boolean }, edges?: Array<{ __typename?: 'GatewayRequestEdge', node?: { __typename?: 'GatewayRequest', id: string, url: string, body?: string | null, contentType?: string | null, requestId: string, tools?: boolean | null, stream?: boolean | null, temperature?: number | null, maxTokens?: number | null, createdAt: string, gateway: { __typename?: 'Gateway', id: string, name: string }, gatewayKey: { __typename?: 'GatewayKey', name: string }, gatewayResponse?: { __typename?: 'GatewayResponse', id: string, duration: number, statusCode: number, headers: any, body?: string | null, createdAt: string, inferenceEndpointResponse?: { __typename?: 'InferenceEndpointResponse', promptTokens?: number | null, completionTokens?: number | null, inferenceEndpointRequest?: { __typename?: 'InferenceEndpointRequest', id: string, inferenceEndpoint: { __typename?: 'InferenceEndpoint', id: string, name: string } } | null } | null } | null } | null } | null> | null } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -565,6 +674,66 @@ export const InferenceEndpointTable_AzureModelDeploymentsFragmentDoc = gql`
   modelDeploymentName
   modelDeploymentModelName
   modelDeploymentModelVersion
+}
+    `;
+export const GatewayRequestTable_GatewaysFragmentDoc = gql`
+    fragment GatewayRequestTable_gateways on GatewayConnection {
+  edges {
+    node {
+      id
+      name
+    }
+  }
+}
+    `;
+export const GatewayRequestTable_GatewayRequestsFragmentDoc = gql`
+    fragment GatewayRequestTable_gatewayRequests on GatewayRequestConnection {
+  pageInfo {
+    startCursor
+    endCursor
+    hasNextPage
+    hasPreviousPage
+  }
+  edges {
+    node {
+      id
+      url
+      body
+      contentType
+      requestId
+      tools
+      stream
+      temperature
+      maxTokens
+      createdAt
+      gateway {
+        id
+        name
+      }
+      gatewayKey {
+        name
+      }
+      gatewayResponse {
+        id
+        duration
+        statusCode
+        headers
+        body
+        createdAt
+        inferenceEndpointResponse {
+          promptTokens
+          completionTokens
+          inferenceEndpointRequest {
+            id
+            inferenceEndpoint {
+              id
+              name
+            }
+          }
+        }
+      }
+    }
+  }
 }
     `;
 export const Layout_ViewerFragmentDoc = gql`
@@ -1258,6 +1427,99 @@ export type HomePageQueryHookResult = ReturnType<typeof useHomePageQuery>;
 export type HomePageLazyQueryHookResult = ReturnType<typeof useHomePageLazyQuery>;
 export type HomePageSuspenseQueryHookResult = ReturnType<typeof useHomePageSuspenseQuery>;
 export type HomePageQueryResult = Apollo.QueryResult<HomePageQuery, HomePageQueryVariables>;
+export const TracesPageDocument = gql`
+    query TracesPage {
+  viewer {
+    ...Layout_viewer
+  }
+  gateways {
+    ...GatewayRequestTable_gateways
+  }
+}
+    ${Layout_ViewerFragmentDoc}
+${GatewayRequestTable_GatewaysFragmentDoc}`;
+
+/**
+ * __useTracesPageQuery__
+ *
+ * To run a query within a React component, call `useTracesPageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTracesPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTracesPageQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTracesPageQuery(baseOptions?: Apollo.QueryHookOptions<TracesPageQuery, TracesPageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TracesPageQuery, TracesPageQueryVariables>(TracesPageDocument, options);
+      }
+export function useTracesPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TracesPageQuery, TracesPageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TracesPageQuery, TracesPageQueryVariables>(TracesPageDocument, options);
+        }
+export function useTracesPageSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<TracesPageQuery, TracesPageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TracesPageQuery, TracesPageQueryVariables>(TracesPageDocument, options);
+        }
+export type TracesPageQueryHookResult = ReturnType<typeof useTracesPageQuery>;
+export type TracesPageLazyQueryHookResult = ReturnType<typeof useTracesPageLazyQuery>;
+export type TracesPageSuspenseQueryHookResult = ReturnType<typeof useTracesPageSuspenseQuery>;
+export type TracesPageQueryResult = Apollo.QueryResult<TracesPageQuery, TracesPageQueryVariables>;
+export const TracesListDocument = gql`
+    query TracesList($first: Int, $after: String, $filter: GatewayRequestFilter, $before: String, $last: Int) {
+  gatewayRequests(
+    first: $first
+    after: $after
+    before: $before
+    last: $last
+    filter: $filter
+  ) @connection(key: "gatewayRequests") {
+    ...GatewayRequestTable_gatewayRequests
+  }
+}
+    ${GatewayRequestTable_GatewayRequestsFragmentDoc}`;
+
+/**
+ * __useTracesListQuery__
+ *
+ * To run a query within a React component, call `useTracesListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTracesListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTracesListQuery({
+ *   variables: {
+ *      first: // value for 'first'
+ *      after: // value for 'after'
+ *      filter: // value for 'filter'
+ *      before: // value for 'before'
+ *      last: // value for 'last'
+ *   },
+ * });
+ */
+export function useTracesListQuery(baseOptions?: Apollo.QueryHookOptions<TracesListQuery, TracesListQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TracesListQuery, TracesListQueryVariables>(TracesListDocument, options);
+      }
+export function useTracesListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TracesListQuery, TracesListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TracesListQuery, TracesListQueryVariables>(TracesListDocument, options);
+        }
+export function useTracesListSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<TracesListQuery, TracesListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TracesListQuery, TracesListQueryVariables>(TracesListDocument, options);
+        }
+export type TracesListQueryHookResult = ReturnType<typeof useTracesListQuery>;
+export type TracesListLazyQueryHookResult = ReturnType<typeof useTracesListLazyQuery>;
+export type TracesListSuspenseQueryHookResult = ReturnType<typeof useTracesListSuspenseQuery>;
+export type TracesListQueryResult = Apollo.QueryResult<TracesListQuery, TracesListQueryVariables>;
 export const LogoutDocument = gql`
     mutation Logout {
   logout
@@ -1299,6 +1561,7 @@ export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, L
     "Node": [
       "Gateway",
       "GatewayKey",
+      "GatewayRequest",
       "InferenceEndpoint"
     ]
   }

@@ -10,6 +10,7 @@ import UpdateGatewayKeysForm from './gateways/[gatewayId]/UpdateGatewayKeysForm'
 import InferenceEndpointForm from './inference-endpoints/InferenceEndpointForm';
 import InferenceEndpointList from './inference-endpoints/InferenceEndpointList';
 import InferenceEndpointTable from './inference-endpoints/import/InferenceEndpointTable';
+import GatewayRequestTable from './traces/GatewayRequestTable';
 
 // import { setVerbosity } from 'ts-invariant';
 // setVerbosity('debug');
@@ -50,6 +51,8 @@ function makeClient() {
       fragments: createFragmentRegistry(gql`
         ${Layout.fragments.viewer}
         ${GatewayList.fragments.gateways}
+        ${GatewayRequestTable.fragments.gateways}
+        ${GatewayRequestTable.fragments.gatewayRequests}
         ${UpdateGatewayForm.fragments.gateway}
         ${UpdateGatewayForm.fragments.inferenceEndpoints}
         ${UpdateGatewayKeysForm.fragments.gateway}

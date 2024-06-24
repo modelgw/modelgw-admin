@@ -39,6 +39,11 @@ export default function Home() {
       title: 'Inference Endpoints',
       description: 'Manage your inference endpoints - where your models are deployed.',
     },
+    data.viewer && {
+      href: '/traces',
+      title: 'Traces',
+      description: 'Inspect the traces of calls to your gateways.',
+    },
     {
       href: 'https://modelgw.com/docs',
       title: 'Docs',

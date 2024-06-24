@@ -16,10 +16,11 @@ const LOGOUT = gql`
 `;
 
 type Props = PropsWithChildren<{
+  fullWidth?: boolean;
   viewer?: Layout_ViewerFragment;
 }>;
 
-export default function Layout({ viewer, children }: Props) {
+export default function Layout({ fullWidth, viewer, children }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const [logout] = useLogoutMutation();
@@ -27,6 +28,7 @@ export default function Layout({ viewer, children }: Props) {
   const navigation = [
     { name: 'Gateways', href: '/gateways' },
     { name: 'Inference Endpoints', href: '/inference-endpoints' },
+    { name: 'Traces', href: '/traces' },
   ];
   const userNavigation = [
     {
@@ -44,7 +46,7 @@ export default function Layout({ viewer, children }: Props) {
         <Disclosure as="nav" className="bg-white dark:bg-gray-800 shadow-sm">
           {({ open }) => (
             <>
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className={clsx('mx-auto', fullWidth ? 'px-2' : 'max-w-7xl px-4 sm:px-6 lg:px-8')}>
                 <div className="flex h-16 justify-between">
                   <div className="flex">
                     <div className="flex flex-shrink-0 items-center">
@@ -180,7 +182,7 @@ export default function Layout({ viewer, children }: Props) {
 
         <div className="py-10">
           <main>
-            <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">{children}</div>
+            <div className={clsx('mx-auto', fullWidth ? 'px-2' : 'max-w-7xl sm:px-6 lg:px-8')}>{children}</div>
           </main>
         </div>
       </div>
