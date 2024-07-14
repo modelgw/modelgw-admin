@@ -5,7 +5,9 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { GatewayRequestFilter, GatewayRequestTable_GatewayRequestsFragment, GatewayRequestTable_GatewaysFragment } from '@/generated/graphql-client';
 import { gql } from '@apollo/client';
+import JsonView from '@uiw/react-json-view';
 import dayjs from 'dayjs';
+import { flatMap, isObject } from 'lodash';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -14,6 +16,12 @@ type Props = {
   gatewayRequests: GatewayRequestTable_GatewayRequestsFragment;
   fetchMore: () => void;
   filter: (filter: GatewayRequestFilter) => void;
+}
+
+function intersperse(arr: any[], separator: any) {
+  return flatMap(arr, (item, index) =>
+    index < arr.length - 1 ? [item, separator] : [item]
+  );
 }
 
 function durationBadgeColor(duration: number) {
@@ -30,6 +38,95 @@ function statusCodeBadgeColor(statusCode: number) {
   if (statusCode < 400) return 'yellow';
   if (statusCode < 500) return 'amber';
   return 'red';
+}
+
+
+type JsonViewerProps = {
+  value?: {
+    messages?: Array<{
+      role?: string;
+      content?: string;
+    }>;
+    choices?: Array<{
+      delta?: {
+        role?: string;
+        content?: string;
+      };
+      message?: {
+        role?: string;
+        content?: string;
+      };
+      finish_reason?: string;
+    }>;
+  }
+}
+
+function CustomJsonViewer({ value: payload }: JsonViewerProps) {
+  const lastMessage = payload?.messages?.[payload.messages?.length - 1];
+  const hasRoleAndContent = !!(lastMessage?.role && lastMessage?.content);
+  const hasChoices = !!(payload?.choices && payload.choices.length > 0);
+  let preview: React.ReactNode = '...';
+  if (hasRoleAndContent) {
+    preview = <span title="Preview">"{lastMessage.role}" &raquo; "{lastMessage.content}"</span>;
+  } else if (hasChoices) {
+    const choices: Array<React.ReactNode> = [];
+    if (payload!.choices![0].delta?.role) {
+      choices.push(<>&Delta; role &raquo; "{payload!.choices![0].delta.role}"</>);
+    }
+    if (payload!.choices![0].delta?.content) {
+      choices.push(<>&Delta; content &raquo; "{payload!.choices![0].delta.content}"</>);
+    }
+    if (payload!.choices![0].message?.content && payload!.choices![0].message?.role) {
+      choices.push(<>"{payload!.choices![0].message.role}" &raquo; "{payload!.choices![0].message.content}"</>);
+    }
+    if (payload!.choices![0].finish_reason) {
+      choices.push(<>finish_reason &raquo; "{payload!.choices![0].finish_reason}"</>);
+    }
+    preview = <span title="Preview">{intersperse(choices, ', ')}</span>;
+  }
+
+  const collapsed = (hasRoleAndContent || hasChoices) ? 0 : 3;
+  return <JsonView value={payload} displayDataTypes={false} collapsed={collapsed}>
+    <JsonView.Ellipsis render={({ 'data-expanded': isExpanded, className, ...props }, { value }) => {
+      if (isExpanded) {
+        return (
+          <span className={className} style={{ cursor: 'pointer', color: 'var(--w-rjv-ellipsis-color, #cb4b16)', userSelect: 'none' }}>
+            {payload == value && preview}
+          </span>
+        )
+      }
+      return <></>;
+    }}>
+    </JsonView.Ellipsis>
+  </JsonView>
+}
+
+function BodyPreview({ body }: { body: string | null | undefined }) {
+  if (body) {
+    try {
+      const jsonBody = JSON.parse(body);
+      if (isObject(jsonBody)) {
+        return <CustomJsonViewer value={jsonBody} />
+      }
+    } catch (e) {
+      // try to parse as JSON lines
+      const jsonViews: Array<React.ReactNode> = [];
+      const lines = body.split('\n');
+      for (const line of lines) {
+        try {
+          const jsonBody = JSON.parse(line.trim());
+          if (isObject(jsonBody)) {
+            jsonViews.push(<CustomJsonViewer value={jsonBody} />);
+          }
+        } catch (e) {
+          jsonViews.push(<div className="font-mono break-all">{line}</div>);
+        }
+      }
+      return jsonViews;
+    }
+  }
+  return body;
+
 }
 
 export default function GatewayRequestTable({ gateways, gatewayRequests, fetchMore, filter }: Props) {
@@ -126,7 +223,7 @@ export default function GatewayRequestTable({ gateways, gatewayRequests, fetchMo
               </>}
               {(edge!.node!.gatewayResponse?.inferenceEndpointResponse?.promptTokens || edge!.node!.gatewayResponse?.inferenceEndpointResponse?.completionTokens) &&
                 <Badge color="zinc" className="mr-1" title="Prompt Tokens / Completion Tokens">
-                  🪙⬆️ {edge!.node!.gatewayResponse.inferenceEndpointResponse.promptTokens ?? '?'}
+                  🪙 ⬆️ {edge!.node!.gatewayResponse.inferenceEndpointResponse.promptTokens ?? '?'}
                   {' '}⬇️ {edge!.node!.gatewayResponse.inferenceEndpointResponse.completionTokens ?? '?'}
                 </Badge>}
               {edge!.node!.url}
@@ -135,18 +232,26 @@ export default function GatewayRequestTable({ gateways, gatewayRequests, fetchMo
           {selectedGatewayRequestIds.includes(edge!.node!.id) && <>
             <tr>
               <td colSpan={3} className="p-1">
-                <div className="text-xs whitespace-pre-wrap">
+                <div className="text-xs">
                   <Badge color="zinc" className="mr-1">Request</Badge>
-                  {edge!.node?.body}
+                  <BodyPreview body={edge!.node?.body} />
                 </div>
               </td>
             </tr>
             {edge!.node!.gatewayResponse && <tr>
               <td colSpan={3} className="p-1">
-                <div className="text-xs inline whitespace-pre-wrap">
+                <div className="text-xs inline">
                   <Badge color="zinc" className="mr-1">Response</Badge>
-                  {edge!.node!.gatewayResponse.inferenceEndpointResponse?.inferenceEndpointRequest?.inferenceEndpoint && <BadgeButton href={`/inference-endpoints/${edge!.node!.gatewayResponse.inferenceEndpointResponse.inferenceEndpointRequest.inferenceEndpoint.id}`} color="zinc" className="mr-1" title="Inference Endpoint">🎯 {edge!.node!.gatewayResponse.inferenceEndpointResponse.inferenceEndpointRequest.inferenceEndpoint.name}</BadgeButton>}
-                  {edge!.node!.gatewayResponse.body}
+                  {edge!.node!.gatewayResponse.inferenceEndpointResponse?.inferenceEndpointRequest?.inferenceEndpoint &&
+                    <BadgeButton
+                      href={`/inference-endpoints/${edge!.node!.gatewayResponse.inferenceEndpointResponse.inferenceEndpointRequest.inferenceEndpoint.id}`}
+                      color="zinc"
+                      className="mr-1"
+                      title="Inference Endpoint"
+                    >
+                      🎯 {edge!.node!.gatewayResponse.inferenceEndpointResponse.inferenceEndpointRequest.inferenceEndpoint.name}
+                    </BadgeButton>}
+                  <BodyPreview body={edge!.node!.gatewayResponse.body} />
                 </div>
               </td>
             </tr>}
