@@ -6,6 +6,7 @@ import { Select } from '@/components/ui/Select';
 import { GatewayRequestFilter, GatewayRequestTable_GatewayRequestsFragment, GatewayRequestTable_GatewaysFragment } from '@/generated/graphql-client';
 import { gql } from '@apollo/client';
 import JsonView from '@uiw/react-json-view';
+import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { flatMap, isObject } from 'lodash';
 import { useState } from 'react';
@@ -90,7 +91,7 @@ function CustomJsonViewer({ value: payload }: JsonViewerProps) {
     <JsonView.Ellipsis render={({ 'data-expanded': isExpanded, className, ...props }, { value }) => {
       if (isExpanded) {
         return (
-          <span className={className} style={{ cursor: 'pointer', color: 'var(--w-rjv-ellipsis-color, #cb4b16)', userSelect: 'none' }}>
+          <span className={clsx('cursor-pointer select-none', className)}>
             {payload == value && preview}
           </span>
         )
