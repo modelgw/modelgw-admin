@@ -55,6 +55,9 @@ export const PLATFORM_LIST: Array<Platform> = [{
     { value: 'westus', name: 'West US', country: 'United States', flag: 'us' },
   ],
   models: [
+    { name: 'gpt-4o-mini', version: '2024-07-18' },
+    { name: 'gpt-4o', version: '2024-08-06' },
+    { name: 'gpt-4o', version: '2024-05-13' },
     { name: 'gpt-4', version: '0314' },
     { name: 'gpt-4-32k', version: '0314' },
     { name: 'gpt-4', version: '0613' },
